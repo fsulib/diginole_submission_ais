@@ -1,0 +1,6 @@
+services:
+  diginole_submission_ais.commands:
+    class: \Drupal\diginole_submission_ais\Commands\ApprovedSubmissionCommands
+    tags:
+      - { name: drush.command }
+    arguments: ['@entity_type.manager', '@logger.factory']
