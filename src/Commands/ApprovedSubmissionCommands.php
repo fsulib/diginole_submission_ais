@@ -4,12 +4,20 @@ namespace Drupal\diginole_submission_ais\Commands;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drush\Commands\DrushCommands;
+use Drupal\diginole_submission_ais\DiginoleSubmissionService;
 
 /**
  * A Drush commandfile for processing approved DigiNole submissions.
  *
  */
 class ApprovedSubmissionCommands extends DrushCommands {
+  /**
+   * THe DigiNole Submission service.
+   *
+   * @var \Drupal\diginole_submission_ais\DiginoleSubmissionService
+   */
+  private $diginoleSubmissionService;
+
   /**
    * Entity type service.
    *
@@ -27,26 +35,53 @@ class ApprovedSubmissionCommands extends DrushCommands {
   /**
    * Constructs a new ApprovedSubmissionCommands object.
    *
+   * @param \Drupal\diginole_submission_ais\DiginoleSubmissionService $diginoleSubmissionService
+   *  DigiNole Submission Service
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *  Entity type service
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $loggerChannelFactory
    *  Logger service
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, LoggerChannelFactoryInterface $loggerChannelFactory) {
+  public function __construct(DiginoleSubmissionService $diginoleSubmissionService, EntityTypeManagerInterface $entityTypeManager, LoggerChannelFactoryInterface $loggerChannelFactory) {
+    $this->diginoleSubmissionService = $diginoleSubmissionService;
     $this->entityTypeManager = $entityTypeManager;
     $this->loggerChannelFactory = $loggerChannelFactory;
   }
 
   /**
-   * TODO: add commands
+   * Process DigiNole submissions
+   *
+   * @command submit_diginole_ais:process_submissions
+   * @aliases ais_process
+   *
+   * @param string $webform
+   *    The machine name of the webform providing submissions
+   * @option status
+   *    The status of submissions to process, default is approved
+   *
+   * @usage submit_diginole_ais:process_submissions honors_thesis_submission --status=approved
    */
+  public function processSubmissions($webform, $options = ['status' => 'approved']) {
+    $webformChoices = ["honors_thesis_submission","research_repository_submission","university_records_submission"];
 
-  /**
-   * A command to run AIS queries for approved submissions
-   */
+    if (!in_array($webform, $webformChoices)) {
+      $this->logger()->warning(dt('You passed an incorrect parameter value. Accepted values are: "honors_these_submision","research_repository_submission","university_records_submission"'));
+    }
+    else {
+      if ($options['status']) {
+        $status = $options['status'];
+      }
+      $sids = $this->diginoleSubmissionService->getSidsByFormAndStatus($webform, $status);
 
-  /**
-   * A command to generate AIS packages from approved submissions
-   */
+      foreach ($sids as $sid) {
+        $submission = $this->entityTypeManager->getStorage('webform_submission')->load($sid);
+        $data = $submission->getData();
+        // $data contains each submission
+
+      }
+
+    }
+
+  }
 
 }
