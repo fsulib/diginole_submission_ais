@@ -3,7 +3,7 @@ services:
     class: \Drupal\diginole_submission_ais\Commands\ApprovedSubmissionCommands
     tags:
       - { name: drush.command }
-    arguments: ['@diginole_submission_ais.submission_service', '@entity_type.manager', '@logger.factory']
+    arguments: ['@diginole_submission_ais.submission_service', '@entity_type.manager', '@logger.factory', '@twig', '@file.repository', '@file_system']
 
   diginole_submission_ais.submission_service:
     class: \Drupal\diginole_submission_ais\DiginoleSubmissionService

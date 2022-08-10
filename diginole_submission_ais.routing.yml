@@ -1,0 +1,7 @@
+diginole_submission_ais.twig_test_output:
+  path: '/test/twig-output'
+  defaults:
+    _title: 'Twig Output'
+    _controller: '\Drupal\diginole_submission_ais\Controller\TestController::twigOutput'
+  requirements:
+    _access: 'TRUE'
